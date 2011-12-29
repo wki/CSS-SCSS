@@ -19,7 +19,7 @@ sub as_string {
     if (ref $self->value && $self->value->can('as_string')) {
         return $self->value->as_string($self->property);
     } else {
-        return $self->property . ':' $self->value;
+        return $self->property . ':' . $self->value . ';';
     }
 }
 
