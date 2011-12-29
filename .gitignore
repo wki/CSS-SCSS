@@ -1,0 +1,11 @@
+Build*
+Makefile
+_build/
+blib/
+*.bak
+inc/
+*.bak
+pm_to_blib
+CSS-SCSS*
+CSS_SCSS*/
+.build/

@@ -10,7 +10,7 @@ has content => (
 sub as_string {
     my $self = shift;
     
-    return "\n" . $self->content . "\n";
+    return "\n/* " . $self->content . " */\n";
 }
 
 __PACKAGE__->meta->make_immutable;
