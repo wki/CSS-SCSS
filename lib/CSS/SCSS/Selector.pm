@@ -9,10 +9,14 @@ has content => (
 
 sub as_string {
     my $self = shift;
-    my $prefix = shift;
+    my $prefix = shift // '';
     
-    ### FIXME: how to handle '&' inside content???
-    return join(' ', ($prefix // ()), $self->content);
+    # replace '&' with prefix, prepend $prefix otherwise
+    my $content = $self->content;
+    if ($content !~ s{[&]}{$prefix}xms) {
+        $content = "$prefix $content" if $prefix;
+    }
+    return $content;
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use Test::Exception;
 
@@ -19,8 +21,7 @@ use ok 'CSS::SCSS::Declaration';
 {
     {
         package Xxx;
-        
-        sub new { bless {}, $_[0] };
+        use Moose;
         
         sub as_string {
             my $self = shift;
