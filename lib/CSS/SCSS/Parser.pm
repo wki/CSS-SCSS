@@ -22,13 +22,6 @@ has nesting => (
     },
 );
 
-around open_block => sub {
-    my ($orig, $self, $block) = @_;
-    
-    $self->block->add_block($block);
-    $orig->($self, $block);
-}
-
 sub block {
     my $self = shift;
     
