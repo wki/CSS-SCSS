@@ -4,6 +4,11 @@ use Moose;
 use namespace::autoclean;
 use feature ':5.10';
 
+use Marpa::XS;
+
+use CSS::SCSS::Parser::Grammar;
+use CSS::SCSS::Parser::Scanner;
+
 use CSS::SCSS::Comment;
 use CSS::SCSS::Rule;
 use CSS::SCSS::Block;
@@ -21,6 +26,27 @@ has nesting => (
         close_block => 'pop',
     },
 );
+
+sub parse {
+    my ($self, $css) = @_;
+    
+    my $scanner = CSS::SCSS::Scanner->new( source_text => $css );
+    
+    my $grammar = Marpa::XS::Grammar->new(css_grammar);
+    $grammar->precompute;
+    
+    my $recognizer = Marpa::XS::Recognizer->new( { grammar => $grammar } );
+    
+    while (my $token = $scanner->next_token) {
+        if ($token->[0] eq 'COMMENT') {
+            # process comments in a different way
+        } elsif (defined $recognizer->read( @$token )) {
+            say "reading Token: @$token";
+        } else {
+            die "Error reading Token: @$token";
+        };
+    }
+}
 
 sub block {
     my $self = shift;

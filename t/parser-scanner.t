@@ -50,8 +50,8 @@ use ok 'CSS::SCSS::Parser::Scanner';
     my @token_tests = (
         {
             name   => 'comment',
-            source => " /* bar */",
-            tokens => [ [COMMENT => '/* bar */'] ],
+            source => " /* bar */\n// something\n  /*  baz  */",
+            tokens => [ [COMMENT => '/* bar */'], [COMMENT => '/*  baz  */'] ],
         },
         {
             name   => 'AT-Name',

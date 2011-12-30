@@ -13,10 +13,10 @@ has parser => (
     is => 'ro',
     isa => 'Object',
     lazy => 1,
-    default => \&_parser,
+    builder => '_build_parser',
 );
 
-# full list of css rules and comment
+# full list of css blocks, rules and comments
 has content => (
     traits => ['Array'],
     is => 'rw',
@@ -27,24 +27,25 @@ has content => (
     },
 );
 
+sub instance {
+    return $instance;
+}
+
 sub as_string {
     my $self = shift;
     
     return join('', map { $_->as_string } @{$self->content});
 }
 
-sub _parser {
-    # my $parser = CSS::SCSS::Parser->new( CSS::SCSS::Parser::_grammar() )
-    #     or die 'Bad grammar!';
-    # return $parser;
+sub _build_parser {
+    return CSS::SCSS::Parser->new();
 }
 
 sub parse_string {
-    my $self = shift;
-    my $css  = shift;
+    my ($self, $css) = @_;
     
-    # local $instance = $self;
-    # $self->parser->css($css);
+    local $instance = $self;
+    $self->parser->parse($css);
 }
 
 __PACKAGE__->meta->make_immutable;

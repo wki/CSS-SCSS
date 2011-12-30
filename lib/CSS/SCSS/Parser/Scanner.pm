@@ -20,6 +20,8 @@ has pos => (
     isa => 'Int',
 );
 
+# TODO: get line number and context from pos
+
 my %symbol_for_char = (
     '{' => 'OPEN_CURLY',    '}' => 'CLOSE_CURLY',
     '(' => 'OPEN_PAREN',    ')' => 'CLOSE_PAREN',
@@ -31,19 +33,6 @@ my %symbol_for_char = (
     '+' => 'PLUS',          '-' => 'MINUS',
     '$' => 'DOLLAR',        '&' => 'AMPERSAND',
 );
-
-# my @tokens;
-# sub t {
-#     # interpolation must get evaluated in STRING|IDENT
-#     # IDEA:
-#     #   - build a second grammar just being capable of 'expression'
-#     #   - make 'expression' the start symbol
-#     #   - scan STRING/IDENT content for #{ ... } things and evaluate expression
-#     
-#     push @tokens, [ @_ ];
-#     # must return empty string, because we might be inside a replacement
-#     return '';
-# }
 
 sub _refresh_tokenizer {
     my $self = shift;
@@ -59,10 +48,9 @@ sub _build_tokenizer {
     return sub {
         no warnings;
         my $token = undef;
-        # warn "before: text='$text', pos=${\pos $text}";
         
         while ((pos($text) // 0) < length $text) {
-            # $text =~ m{\G \s* // .*? ^}xmsg and next;
+            next if $text =~ m{\G \s* // .*? ^}xmsgc;
             
             $text =~ m{\G \s* (/\* .*? \*/) \s*}xmsgc
                 and do { $token = [ COMMENT => $1 ]; last };
@@ -102,8 +90,6 @@ sub _build_tokenizer {
             last;
         }
         
-        # warn "after: text='$text', pos=${\pos $text}";
-        
         $self->pos( pos($text) // 0 );
         return $token;
     };
@@ -114,27 +100,6 @@ sub next_token {
     
     return $self->tokenizer->();
 }
-
-# while (length($text)) {
-#     no warnings;
-#     $text =~ s{\G \s* // .*? ^}{}xms and next;
-#     $text =~ s{\G \s* (/\* .*? \*/) \s*}{ t COMMENT => $1 }exms and next;
-#     $text =~ s{\G \s* \@([a-z]+) \s*}{ t "AT_\U$1" }exms and next;
-#     $text =~ s{\G \s* !important \s*}{ t 'IMPORTANT' }exms and next;
-#     $text =~ s{\G \s* (\#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?) \s*}{ t HEXCOLOR => $1 }exms and next;
-#     $text =~ s{\G \s* (['"]) ((?:[^\\\1] | \\.)*?) \1 \s*}{ t STRING => $2 }exms and next;
-#     $text =~ s{\G \s* ([~|]?=) \s*}{ t ATTR_CMP => $1 }exms and next;
-#     $text =~ s{\G \s+ }{ t 'SPACE' }exms and next;
-#     $text =~ s{\G \s* (-?[_a-zA-Z][-_a-zA-Z0-9]*)}{t IDENT => $1}exms and next; ### INTERPOLATION
-#     $text =~ s{\G \s* (\.\d+ | \d+ (?:\.\d*)?) \s* (%|em|ex|px|cm|mm|pt|pc|deg|rad|grad|ms|s|hz|khz)? \s*}{ t NUMBER => "$1$2" }exms and next;
-#     
-#     my $char = substr($text,0,1,'');
-#     if (exists($symbol_for_char{$char})) {
-#         t $symbol_for_char{$char} => $char;
-#     } else {
-#         t CHAR => $char;
-#     }
-# }
 
 __PACKAGE__->meta->make_immutable;
 

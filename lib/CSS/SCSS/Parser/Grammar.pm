@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use base 'Exporter';
 
+our @EXPORT = qw(css_grammar);
+
 sub css_grammar {
     return {
         start => 'css',
