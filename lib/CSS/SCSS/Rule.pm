@@ -1,6 +1,5 @@
 package CSS::SCSS::Rule;
 use Moose;
-use MooseX::Types;
 use CSS::SCSS::Selector;
 use CSS::SCSS::Declaration;
 use namespace::autoclean;
@@ -38,9 +37,9 @@ sub as_string {
     my $self = shift;
     my $prefix = shift;
     
-    # how to handle empty selector array
+    ### FIXME: how to handle empty selector array???
     return join(',', map { $_->as_string($prefix) } @{$self->selectors})
-           . '{' . join(';', map { $_->as_string($prefix) } @{$self->declarations}) . '}';
+           . '{' . join('', map { $_->as_string($prefix) } @{$self->declarations}) . '}';
 }
 
 __PACKAGE__->meta->make_immutable;

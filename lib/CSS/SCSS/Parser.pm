@@ -14,13 +14,20 @@ use CSS::SCSS::Block;
 has nesting => (
     traits => ['Array'],
     is => 'rw',
-    isa => 'ArrayRef',
+    isa => 'ArrayRef[CSS::SCSS::Block]',
     default => sub { [ CSS::SCSS::Block->new() ] },
     handles => {
         open_block => 'push',
         close_block => 'pop',
     },
 );
+
+around open_block => sub {
+    my ($orig, $self, $block) = @_;
+    
+    $self->block->add_block($block);
+    $orig->($self, $block);
+}
 
 sub block {
     my $self = shift;

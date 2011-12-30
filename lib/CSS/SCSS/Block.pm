@@ -1,17 +1,17 @@
 package CSS::SCSS::Block;
 use Moose;
-use MooseX::Types;
+# use MooseX::Types;
 use CSS::SCSS::Selector;
 use CSS::SCSS::Rule;
 use namespace::autoclean;
 
-# coercion issues a warning.
-coerce 'CSS::SCSS::Selector'
-    => from 'Str'
-    => via { CSS::SCSS::Selector->new( content => $_ ) };
+# # coercion issues a warning.
+# coerce 'CSS::SCSS::Selector'
+#     => from 'Str'
+#     => via { CSS::SCSS::Selector->new( content => $_ ) };
 
 has parent => (
-    is => 'rw', 
+    is => 'rw',
     isa => 'Maybe[CSS::SCSS::Block]',
 );
 
@@ -56,11 +56,18 @@ has variable => (
     },
 );
 
+around add_block => sub {
+    my ($orig, $self, $child) = @_;
+    
+    $child->parent($self);
+    return $orig->($self, $child);
+};
+
 around get_variable => sub {
     my ($orig, $self, $variable_name) = @_;
-    
-    return $orig->($self, $variable_name) 
-        // ($self->parent 
+
+    return $orig->($self, $variable_name)
+        // ($self->parent
                 ? $self->parent->get_variable($variable_name)
                 : undef);
 };
@@ -68,12 +75,14 @@ around get_variable => sub {
 sub as_string {
     my $self = shift;
     my $prefix = shift // '';
-    
+
     # TODO: handle media
-    return 
+    return
         join("\n",
-             map { $_->as_string( $prefix . $self->selector ) } 
-             @{$self->rules}
+             map { $_->as_string( $self->selector
+                                    ? $self->selector->as_string($prefix) 
+                                    : $prefix ) }
+             @{$self->rules}, @{$self->children}
         );
 }
 
