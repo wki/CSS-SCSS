@@ -27,12 +27,15 @@ sub css_grammar {
             },
             
             { lhs => 'charset' },
-            { lhs => 'charset', rhs => [qw(AT_CHARSET STRING SEMICOLON)] },
+            { 
+                lhs => 'charset', 
+                rhs => [qw(AT_CHARSET STRING SEMICOLON)],
+            },
             
             { lhs => 'imports' },
             { 
                 lhs => 'imports',
-                rhs => [qw(AT_IMPORT expression SEMICOLON)],
+                rhs => [qw(AT_IMPORT expression SEMICOLON imports)],
             },
             
             { lhs => 'css_content', rhs => ['css_content_part'], min => 0 },

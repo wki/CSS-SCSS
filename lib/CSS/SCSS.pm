@@ -45,7 +45,7 @@ sub parse_string {
     my ($self, $css) = @_;
     
     local $instance = $self;
-    $self->parser->parse($css);
+    return $self->parser->parse($css);
 }
 
 __PACKAGE__->meta->make_immutable;

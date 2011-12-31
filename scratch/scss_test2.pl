@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use feature ':5.10';
@@ -247,6 +248,7 @@ $grammar->precompute;
 #
 my $rec = Marpa::XS::Recognizer->new( { grammar => $grammar } );
 foreach my $token (@tokens) {
+    # use Data::Dumper; say Dumper($token);
     if ($token->[0] eq 'COMMENT') {
         # process comments in a different way
     } elsif (defined $rec->read( @$token )) {
