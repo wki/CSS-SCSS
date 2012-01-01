@@ -15,6 +15,10 @@ use ok 'CSS::SCSS::Declaration';
     
     like $declaration->as_string, qr{\A \s* foo \s* : \s* bar \s* ; \s* \z}xms,
          'string value stringification';
+    
+    $declaration->is_important(1);
+    like $declaration->as_string, qr{\A \s* foo \s* : \s* bar \s+ !important \s*; \s* \z}xms,
+         'string value stringification w/ important';
 }
 
 # object value
@@ -37,7 +41,7 @@ use ok 'CSS::SCSS::Declaration';
     lives_ok { $declaration = CSS::SCSS::Declaration->new(property => 'bar', value => $o) }
              'instantiation w/ object value possible';
     
-    like $declaration->as_string, qr{\A \s* x [ ] bar [ ] y \s* \z}xms,
+    like $declaration->as_string, qr{\A \s* x \s+ bar \s+ y \s* \z}xms,
          'object value stringification';
 }
 

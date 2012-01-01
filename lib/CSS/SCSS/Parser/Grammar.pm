@@ -40,13 +40,13 @@ sub css_grammar {
             
             { lhs => 'css_content', rhs => ['css_content_part'], min => 0 },
             
-            { lhs => 'css_content_part', rhs => [qw(ruleset)], },
+            { lhs => 'css_content_part', rhs => [qw(rule)], },
             { lhs => 'css_content_part', rhs => [qw(media)] },
             { lhs => 'css_content_part', rhs => [qw(page)] },
             { lhs => 'css_content_part', rhs => [qw(variable_definition)] },
             
             { 
-                lhs => 'ruleset',
+                lhs => 'rule',
                 rhs => [qw(optional_space selectors
                            optional_space OPEN_CURLY 
                            optional_space declarations 
@@ -55,7 +55,7 @@ sub css_grammar {
             
             { lhs => 'declarations' },
             { lhs => 'declarations', rhs => [qw(variable_definition declarations)], },
-            { lhs => 'declarations', rhs => [qw(ruleset declarations)], },
+            { lhs => 'declarations', rhs => [qw(rule declarations)], },
             { lhs => 'declarations', rhs => [qw(declaration optional_space SEMICOLON declarations)], },
             { lhs => 'declarations', rhs => [qw(declaration)] },
             
@@ -97,7 +97,7 @@ sub css_grammar {
             
             { lhs => 'property', rhs => [qw(expression)] },
             
-            { lhs => 'media', rhs => [qw(AT_MEDIA idents OPEN_CURLY ruleset CLOSE_CURLY)] },
+            { lhs => 'media', rhs => [qw(AT_MEDIA idents OPEN_CURLY rule CLOSE_CURLY)] },
                       
             { lhs => 'page', rhs => [qw(AT_PAGE pseudo_page OPEN_CURLY declarations CLOSE_CURLY)] },
             

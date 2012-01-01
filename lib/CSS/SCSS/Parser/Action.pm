@@ -3,6 +3,8 @@ use Moose;
 use namespace::autoclean;
 use feature ':5.10';
 
+use CSS::SCSS;
+
 our $DEBUG = 1;
 
 sub css {
@@ -32,9 +34,14 @@ sub css_content_part {
     return $_[1];
 }
 
-sub ruleset {
-    # say Data::Dumper->Dump([ [@_] ],[ 'Ruleset' ]) if $DEBUG;
-    return { type => 'ruleset', selectors => $_[2], declations => $_[6] };
+sub rule {
+    # say Data::Dumper->Dump([ [@_] ],[ 'Rule' ]) if $DEBUG;
+    return CSS::SCSS::Rule->new(
+        {
+            selectors => $_[2],
+            declarations => $_[6],
+        });
+    # return { type => 'rule', selectors => $_[2], declations => $_[6] };
 }
 
 sub selectors {
@@ -44,7 +51,13 @@ sub selectors {
 
 sub declaration {
     say Data::Dumper->Dump([ [@_] ],[ 'Declaration' ]) if $DEBUG;
-    return { property => $_[2], value => $_[6], prio => $_[8] };
+    return CSS::SCSS::Declaration->new(
+        {
+            property     => $_[2],
+            value        => $_[6],
+            is_important => $_[8] ? 1 : 0
+        });
+    # return { property => $_[2], value => $_[6], prio => $_[8] };
 }
 
 sub declarations {
@@ -53,7 +66,7 @@ sub declarations {
 
 sub important {
     # say Data::Dumper->Dump([ [@_] ],[ 'Prio' ]) if $DEBUG;
-    return '!important';
+    return 1;
 }
 
 sub variable_definition {
