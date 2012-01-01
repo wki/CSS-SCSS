@@ -4,6 +4,9 @@ use namespace::autoclean;
 use feature ':5.10';
 
 use CSS::SCSS;
+use CSS::SCSS::Selector;
+use CSS::SCSS::Declaration;
+use CSS::SCSS::Rule;
 
 our $DEBUG = 1;
 
@@ -36,21 +39,27 @@ sub css_content_part {
 
 sub rule {
     # say Data::Dumper->Dump([ [@_] ],[ 'Rule' ]) if $DEBUG;
-    return CSS::SCSS::Rule->new(
+    my $rule = CSS::SCSS::Rule->new(
         {
-            selectors => $_[2],
+            selectors    => $_[2],
             declarations => $_[6],
         });
+    CSS::SCSS->instance->add_rule($rule);
+    return;
     # return { type => 'rule', selectors => $_[2], declations => $_[6] };
 }
 
 sub selectors {
     # say Data::Dumper->Dump([ [@_] ],[ 'Selectors' ]) if $DEBUG;
-    return [ $_[1], @{$_[4] // []} ];
+    return [ CSS::SCSS::Selector->new( { content => $_[1] } ), @{$_[5] // []} ];
 }
 
+sub divider_space { ' ' };
+sub divider_gt { '>' };
+sub divider_plus { '+' };
+
 sub declaration {
-    say Data::Dumper->Dump([ [@_] ],[ 'Declaration' ]) if $DEBUG;
+    # say Data::Dumper->Dump([ [@_] ],[ 'Declaration' ]) if $DEBUG;
     return CSS::SCSS::Declaration->new(
         {
             property     => $_[2],
@@ -97,7 +106,7 @@ sub variable {
 
 # default action simply concatenates strings
 sub do_default {
-    say Data::Dumper->Dump([ [@_] ],[ 'default action' ]); # if $DEBUG;
+    # say Data::Dumper->Dump([ [@_] ],[ 'default action' ]); # if $DEBUG;
     return join('', grep { defined } @_[1..$#_])
 }
 

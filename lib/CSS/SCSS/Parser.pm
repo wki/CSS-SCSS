@@ -10,7 +10,13 @@ use CSS::SCSS::Parser::Action;
 use CSS::SCSS::Parser::Grammar;
 use CSS::SCSS::Parser::Scanner;
 
-our $DEBUG = 1; # 0 = off, 1 = verbose, 2 = more verbose
+our $DEBUG = 0; # 0 = off, 1 = verbose, 2 = more verbose
+
+has grammar => (
+    is => 'rw',
+    isa => 'HashRef',
+    default => sub { +{ %{css_grammar()} } }, # shallow copy
+);
 
 sub parse {
     my ($self, $css) = @_;
@@ -19,9 +25,9 @@ sub parse {
 
     my $scanner = CSS::SCSS::Parser::Scanner->new( { source_text => $css } );
 
-    my $grammar = Marpa::XS::Grammar->new(css_grammar);
+    my $grammar = Marpa::XS::Grammar->new($self->grammar);
     $grammar->precompute;
-
+    
     my $recognizer = Marpa::XS::Recognizer->new( { grammar => $grammar } );
 
     while (my $token = $scanner->next_token) {
