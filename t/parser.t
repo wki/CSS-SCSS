@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
+use_ok 'CSS::SCSS';
 use ok 'CSS::SCSS::Parser';
 use ok 'CSS::SCSS::Parser::Action';
 use ok 'CSS::SCSS::Parser::Grammar';
@@ -20,12 +21,26 @@ use ok 'CSS::SCSS::Parser::Grammar';
     # get the original grammar for modification
     my %css_grammar = %{ CSS::SCSS::Parser::Grammar::css_grammar() };
     $css_grammar{inaccessible_ok} = 1; # avoid warnings during tests
-    
+
+    ### Variable definition
+    {
+        my $scss = CSS::SCSS->new();
+        local $CSS::SCSS::instance = $scss;
+
+        my $parser = CSS::SCSS::Parser->new(
+            { grammar => { %css_grammar, start => 'variable_definition' } }
+        );
+        lives_ok { $parser->parse( '$foo:13px 12px;' ) }
+                 'parsing variable definition lives';
+
+        is $scss->get_variable('foo'), '13px 12px', 'variable is there';
+    }
+
     ### Selectors
-    my $parser = CSS::SCSS::Parser->new( 
+    my $parser = CSS::SCSS::Parser->new(
         { grammar => { %css_grammar, start => 'selectors' } }
     );
-    
+
     my $result;
     lives_ok { $result = $parser->parse( 'div.foo , #nav span .bar' ) }
              'parsing selectors lives';
@@ -35,13 +50,13 @@ use ok 'CSS::SCSS::Parser::Grammar';
     isa_ok ref $$result->[1], 'CSS::SCSS::Selector';
     is $$result->[0]->content, 'div.foo', 'first selector is "div.foo"';
     is $$result->[1]->content, '#nav span .bar', 'first selector is "#nav span .bar"';
-    
+
     ### Declaration
     undef $parser;
-    $parser = CSS::SCSS::Parser->new( 
+    $parser = CSS::SCSS::Parser->new(
         { grammar => { %css_grammar, start => 'declaration' } }
     );
-    
+
     undef $result;
     lives_ok { $result = $parser->parse( ' webkit-foo : 13 px ' ) }
              'parsing declaration 1 lives';

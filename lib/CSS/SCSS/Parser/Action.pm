@@ -55,8 +55,10 @@ sub selectors {
 }
 
 sub divider_space { ' ' };
-sub divider_gt { '>' };
-sub divider_plus { '+' };
+sub divider_gt    { '>' };
+sub divider_plus  { '+' };
+sub divider_comma { ',' };
+sub divider_slash { '/' };
 
 sub declaration {
     # say Data::Dumper->Dump([ [@_] ],[ 'Declaration' ]) if $DEBUG;
@@ -79,14 +81,17 @@ sub important {
 }
 
 sub variable_definition {
-    say Data::Dumper->Dump([ [@_] ],[ 'Variable Definition' ]) if $DEBUG;
-    return { type => 'variable_definition', variable => $_[3], value => $_[6] };
+    # say Data::Dumper->Dump([ [@_] ],[ 'Variable Definition' ]) if $DEBUG;
+    CSS::SCSS->instance->set_variable($_[3] => $_[6]);
+    # return { type => 'variable_definition', variable => $_[3], value => $_[6] };
     return;
 }
 
 sub expression {
     # say Data::Dumper->Dump([ [@_] ],[ 'Expression' ]) if $DEBUG;
-    return $_[1];
+    return scalar(@_) == 4 ? "$_[1]$_[2]$_[3]"
+         : scalar(@_) == 3 ? "$_[1] $_[2]"
+         :                   $_[1];
 }
 
 sub term {
