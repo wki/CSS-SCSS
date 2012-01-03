@@ -39,7 +39,7 @@ sub _build_args_from_value {
 sub as_string {
     my $self = shift;
     
-    return '' . $self->value;
+    return '' . $self->value . ($self->unit // '');
 }
 
 sub convert_to_unit {
@@ -51,7 +51,18 @@ sub convert_to_unit {
 sub apply {
     my ($self, $operator, $operand) = @_;
     
-    die 'apply() must be overloaded';
+    # my $other_value = $operand->convert_to_unit($self->unit);
+    
+    my $class = ref $self;
+    my $method = "do_$operator";
+    
+    return $class->new(
+        {
+            value => $self->$method($operand),
+            ($self->unit
+                ? (unit => $self->unit)
+                : ()),
+        } );
 }
 
 __PACKAGE__->meta->make_immutable;

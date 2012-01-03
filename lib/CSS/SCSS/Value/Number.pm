@@ -46,32 +46,49 @@ sub _build_args_from_value {
     return \%args;
 }
 
-sub as_string {
-    my $self = shift;
-    
-    return '' . $self->value . ($self->unit // '');
-}
-
 sub convert_to_unit {
     my $self = shift;
     my $unit = shift // '';
     
     my $from = $self->unit // '';
     
+    return $self->value if !$from && !$unit;
+    
     die "Conversion from '$from' to '$unit' not possible"
         if !exists $conversion_from_to{$from} ||
-           !exists $conversion_form_to{$from}->{$unit};
+           !exists $conversion_from_to{$from}->{$unit};
     
-    return $self->value * $conversion_form_to{$from}->{$unit};
+    return $self->value * $conversion_from_to{$from}->{$unit};
 }
 
-sub apply {
-    my ($self, $operator, $operand) = @_;
+sub do_add {
+    my ($self, $operand) = @_;
     
     my $other_value = $operand->convert_to_unit($self->unit);
-    
-    ### TODO: execute, create a new object, done.
+    return $self->value + $other_value;
 }
+
+sub do_subtract {
+    my ($self, $operand) = @_;
+    
+    my $other_value = $operand->convert_to_unit($self->unit);
+    return $self->value - $other_value;
+}
+
+sub do_multiply {
+    my ($self, $operand) = @_;
+    
+    my $other_value = $operand->convert_to_unit(undef);
+    return $self->value * $other_value;
+}
+
+sub do_divide {
+    my ($self, $operand) = @_;
+    
+    my $other_value = $operand->convert_to_unit(undef);
+    return $self->value / $other_value;
+}
+
 
 __PACKAGE__->meta->make_immutable;
 
