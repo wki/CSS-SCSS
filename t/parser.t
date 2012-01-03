@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 
-use_ok 'CSS::SCSS';
+use ok 'CSS::SCSS';
 use ok 'CSS::SCSS::Parser';
 use ok 'CSS::SCSS::Parser::Action';
 use ok 'CSS::SCSS::Parser::Grammar';
