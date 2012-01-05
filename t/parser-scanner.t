@@ -135,7 +135,15 @@ use ok 'CSS::SCSS::Parser::Scanner';
         $scanner->source_text($test_case->{source});
         my $i = 1;
         foreach my $token (@{$test_case->{tokens}}) {
-            is_deeply $scanner->next_token, $token, "$test_case->{name}: token $i";
+            my $read_token = $scanner->next_token;
+            
+            if (scalar @$read_token == 2
+                && ref($read_token->[1]) =~ m{Value}xms
+                && $read_token->[1]->can('as_string')
+                ) {
+                $read_token->[1] = $read_token->[1]->as_string;
+            }
+            is_deeply $read_token, $token, "$test_case->{name}: token $i";
             $i++;
         }
         ok !defined $scanner->next_token, "$test_case->{name}: eof";

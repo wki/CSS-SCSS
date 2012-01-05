@@ -1,5 +1,6 @@
 package CSS::SCSS::Parser::Scanner;
 use Moose;
+use CSS::SCSS::Value::Number;
 use namespace::autoclean;
 
 has source_text => (
@@ -64,7 +65,7 @@ sub _build_tokenizer {
             $text =~ m{\G \s* (\#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?) \s*}xmsgc
                 and do { $token = [ HEXCOLOR => $1 ]; last };
             
-            $text =~ m{\G \s* (['"]) ((?:[^\\\1] | \\.)*?) \1 \s*}xmsgc
+            $text =~ m{\G \s* (['"]) ((?:[^\\\1] | \\.)*?) \1 \s*}xmsgc ### TODO: INTERPOLATION
                 and do { $token = [ STRING => $2 ]; last };
             
             $text =~ m{\G \s* ([~|]?=) \s*}xmsgc
@@ -73,11 +74,16 @@ sub _build_tokenizer {
             $text =~ m{\G \s+ }xmsgc
                 and do { $token = [ 'SPACE' ]; last };
             
-            $text =~ m{\G \s* (-?[_a-zA-Z][-_a-zA-Z0-9]*)}xmsgc ### INTERPOLATION
+            $text =~ m{\G \s* (-?[_a-zA-Z][-_a-zA-Z0-9]*)}xmsgc ### TODO: INTERPOLATION
                 and do { $token = [ IDENT => $1 ]; last };
             
             $text =~ m{\G \s* (\.\d+ | \d+ (?:\.\d*)?) \s* (%|em|ex|px|cm|mm|pt|pc|deg|rad|grad|ms|s|hz|khz)? \s*}xmsgc
-                and do { $token = [ NUMBER => "$1$2" ]; last };
+                and do {
+                    my %args = (value => $1 );
+                    $args{unit} = $2 if $2;
+                    $token = [ NUMBER => CSS::SCSS::Value::Number->new( \%args ) ];
+                    last
+                };
             
             my $pos = pos($text);
             my $char = substr($text,$pos,1);

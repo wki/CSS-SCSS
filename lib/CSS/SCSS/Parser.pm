@@ -15,7 +15,7 @@ our $DEBUG = 0; # 0 = off, 1 = verbose, 2 = more verbose
 has grammar => (
     is => 'rw',
     isa => 'HashRef',
-    default => sub { +{ %{css_grammar()} } }, # shallow copy
+    default => sub { { %{css_grammar()} } }, # shallow copy
 );
 
 sub parse {

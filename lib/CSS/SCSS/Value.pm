@@ -1,7 +1,15 @@
 package CSS::SCSS::Value;
 use Moose;
-use namespace::autoclean;
+# use namespace::autoclean; # conflicts with overload
+use overload
+    '""' => \&as_string,
+    '+'  => sub { $_[0]->apply(add => $_[1]) },
+    '-'  => sub { $_[0]->apply(subtract => $_[1]) },
+    '*'  => sub { $_[0]->apply(multiply => $_[1]) },
+    '/'  => sub { $_[0]->apply(divide => $_[1]) },
+    fallback => 1;
 
+    
 has value => (
     is => 'ro',
     isa => 'Any',

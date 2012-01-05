@@ -29,6 +29,11 @@ use ok 'CSS::SCSS::Value::Number';
     lives_ok { $value = CSS::SCSS::Value->new(13) } 'new value from scalar';
     is $value->unit, undef, 'value unit is undefined 3';
     is $value->value, 13, 'value is 13';
+    
+    undef $value;
+    lives_ok { $value = CSS::SCSS::Value->new( { value => 13, unit => 'xx' } ) } 'new value with unit';
+    is $value->as_string, '13xx', 'value with unit as_string is 13xx';
+    is "$value", '13xx', 'value with unit stringified is 13xx';
 }
 
 # number
@@ -43,6 +48,7 @@ use ok 'CSS::SCSS::Value::Number';
     is $number->convert_to_unit(), 32, 'number conversion to no-unit works';
     is $number->convert_to_unit('%'), 3200, 'number conversion to percent works';
     dies_ok { $number->convert_to_unit('px') } 'number conversion to px fails works';
+    is "$number", '32', 'stringification gives 32';
 
     # number w/o unit + arithmetic
     $operand = CSS::SCSS::Value::Number->new(4);
@@ -50,6 +56,15 @@ use ok 'CSS::SCSS::Value::Number';
     is $number->apply(subtract => $operand)->value, 28, 'subtract w/o unit works';
     is $number->apply(multiply => $operand)->value, 128, 'multiply w/o unit works';
     is $number->apply(divide => $operand)->value, 8, 'divide w/o unit works';
+    my $x = $number + $operand;
+    isa_ok $x, 'CSS::SCSS::Value::Number';
+    is $x->value, 36, 'add with operator works';
+    $x = $number - $operand;
+    is $x->value, 28, 'subtract with operator works';
+    $x = $number * $operand;
+    is $x->value, 128, 'multiply with operator works';
+    $x = $number / $operand;
+    is $x->value, 8, 'divide with operator works';
 
     # number w/ unit
     undef $number;
@@ -57,6 +72,7 @@ use ok 'CSS::SCSS::Value::Number';
     is $number->unit, 'px', 'number unit is px';
     is $number->value, 14, 'number value is 14';
     is $number->as_string, '14px', 'number string is 14px';
+    is "$number", '14px', 'stringification gives 14px';
 
     dies_ok { $number->convert_to_unit('foo') } 'conversion px -> foo fails';
     ok $number->convert_to_unit('mm') > 4.9 && $number->convert_to_unit('mm') < 5,
@@ -65,4 +81,6 @@ use ok 'CSS::SCSS::Value::Number';
     $operand = CSS::SCSS::Value::Number->new(4);
     dies_ok { $number->apply(add => $operand) } 'pt + 4 dies';
 }
+
+
 done_testing;
