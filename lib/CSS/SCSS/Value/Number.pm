@@ -3,14 +3,14 @@ use Moose;
 use namespace::autoclean;
 extends 'CSS::SCSS::Value';
 
-# units in milli-meter
+# units in micro-meter
 our %size = (
     mm =>  1_000,
     cm => 10_000,
     in => 25_400,
     pt => 25_400 / 72,
     pc => 25_400 /  6,
-    px => 25_400 / 72,
+    px => 25_400 / 72, # original definition on a Mac
 );
 
 
