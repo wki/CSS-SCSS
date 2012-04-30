@@ -1,0 +1,10 @@
+Arithmetic with types and values
+
+- associativity
+  left-associative, evaluation from left to right
+
+- conversion
+  left value determines type of expression
+  right value must match or be convertible
+    * $right->convert_to(ref $self)
+
