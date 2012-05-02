@@ -1,0 +1,64 @@
+Arithmetic with types and values
+
+- associativity
+  left-associative, evaluation from left to right
+
+- conversion
+  left value determines type of expression
+  right value must match or be convertible
+    * $right->convert_to(ref $self)
+
+
+
+Type hierarchy
+--------------
+
+    Value
+      Number   *
+        Integer
+        Percentage
+      Unit
+        Length
+          RelativeLength   *
+            Em
+            Ex == 1/2 em
+          AbsoluteLength   *
+            Cm
+            Mm
+            In
+            Pt == 1/72 in
+            Pc == 12 pt
+            Px == 1/96 in
+        Angle   *
+          Deg
+          Grad
+          Rad
+          Turn
+        Time   *
+          S
+          Ms
+        Frequency   *
+          Hz
+          KHz
+        Resolution   *
+          Dpi
+          Dpcm
+          Dppx
+        Color   *
+          Name
+          Hex
+          Rgb
+          Rgba
+          Hsl
+          Hsla
+
+    * --> responsible for value attributes. All child types share these attributes
+    
+
+Arithmetic
+----------
+
+<type> +|- ( <type> | <sibling-of-type> )
+
+<type> *|/ <number>
+
