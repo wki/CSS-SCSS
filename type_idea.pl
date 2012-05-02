@@ -1,50 +1,48 @@
 package Value;
-sub as_string {}
+has value (is => 'rw');      # used as primary value, whatever the type may be
+has extension (is => 'rw');  # used as helper value eg. transparency
+sub as_string { $self->value }
 sub apply(operator, operand) { ... }
-sub convert_to { die }      # universal conversion using common factor
+sub multiple_of_base { 1 }
+sub convert_to_class { die }      # universal conversion using common factor
 
 
 package Number;
-has value (is => 'rw');
-sub common_factor { 1 }
-sub as_string { $self->value }
-
 
 package Number::Percentage
-sub common_factor { 0.01 }
+sub multiple_of_base { 100 }
 sub as_string { $self->value . '%' }
-sub convert_to { ... }
+sub convert_to_class { ... }
 
 
 package Unit;
-sub common_factor { die }   # common_value = class_value * common_factor
+sub multiple_of_base { die }   # base = class_value / multiple_of_base
+has unit (is => 'ro');
 
 
 package Unit::Absolute;
-has value (is => 'rw');
-has unit (is => 'ro');
 sub as_string { $self->value . $self->unit }
 sub add { 
     (ref $self)->new(
-        value => $self->value + $other->convert_to(ref $self),
+        value => $self->value + $other->convert_to_class(ref $self),
         unit  => $self->unit,
     )
 }
 
 sub multiply {
     (ref $self)->new(
-        value => $self->value * $other->convert_to('CSS::SCSS::Number')
+        value => $self->value * $other->convert_to_class('CSS::SCSS::Number')
         unit  => $self->unit
     )
 }
 
 
 package Unit::Absolute::Cm;
-sub common_factor { 10_000 }
+sub multiple_of_base { 10_000 }
 
 
 package Unit::Absolute::Mm;
-sub common_factor { 1_000 }
+sub multiple_of_base { 1_000 }
 
 
 package Unit::Color;
