@@ -9,7 +9,6 @@ Arithmetic with types and values
     * $right->convert_to(ref $self)
 
 
-
 Type hierarchy
 --------------
 
